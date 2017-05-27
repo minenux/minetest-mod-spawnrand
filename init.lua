@@ -2,10 +2,10 @@ random_spawn = {}
 
 function random_spawn(player)
    local elevation = 15
-   local radius = 1000
+   local radius = 5
    local posx = math.random(-radius, radius)
    local posz = math.random(-radius, radius)
-   local new_spawn = {x = posx, y = elevation, z = posz}
+   local new_spawn = {x = -174 + posx, y = elevation, z = 178 + posz}
    local node = minetest.get_node_or_nil(new_spawn)
    if not node or node.name == 'ignore' then
       minetest.emerge_area({x = new_spawn.x, y = new_spawn.y+30, z = new_spawn.z}, {x = new_spawn.x, y = new_spawn.y-30, z = new_spawn.z})
@@ -27,13 +27,14 @@ function find_ground(pos, player)
             random_spawn(player)
          end
          if node.name ~= 'air' and node.name ~= 'ignore' then
-            local protection = minetest.is_protected({x = pos.x, y = pos.y - i + 2, z = pos.z})
+            local protection = minetest.is_protected({x = pos.x, y = pos.y - i + 2, z = pos.z}, player)
             if protection then
                random_spawn(player)
+            else
+               player:setpos({x = pos.x, y = pos.y - i + 2, z = pos.z})
+               minetest.set_node({x = pos.x, y = pos.y + i +1, z = pos.z}, {name = 'default:torch', param2 = 1})
+               finished = true
             end
-            player:setpos({x = pos.x, y = pos.y - i + 2, z = pos.z})
-            minetest.set_node({x = pos.x, y = pos.y + i +1, z = pos.z}, {name = 'default:torch', param2 = 1})
-            finished = true
          end
       until finished == true or i < -40
    elseif node.name ~= 'air' or node.name ~= 'ignore' then --Theoretically below ground
@@ -45,13 +46,14 @@ function find_ground(pos, player)
             random_spawn(player)
          end
          if node.name == 'air' then
-            local protection = minetest.is_protected({x = pos.x, y = pos.y + i, z = pos.z})
+           local protection = minetest.is_protected({x = pos.x, y = pos.y + i, z = pos.z}, player)
             if protection then
                random_spawn(player)
+            else
+               player:setpos({x = pos.x, y = pos.y + i, z = pos.z})
+               minetest.set_node({x = pos.x, y = pos.y + i -1, z = pos.z}, {name = 'default:torch', param2 = 1})
+               i = 45
             end
-            player:setpos({x = pos.x, y = pos.y + i, z = pos.z})
-            minetest.set_node({x = pos.x, y = pos.y + i -1, z = pos.z}, {name = 'default:torch', param2 = 1})
-            i = 45
          end
       until node.name == 'air' or i >= 40
    end
