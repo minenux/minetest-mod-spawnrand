@@ -2,7 +2,7 @@ random_spawn = {}
 
 function random_spawn(player)
    local elevation = 15
-   local radius = 5
+   local radius = 1000
    local posx = math.random(-radius, radius)
    local posz = math.random(-radius, radius)
    local new_spawn = {x = -174 + posx, y = elevation, z = 178 + posz}
@@ -23,26 +23,27 @@ function find_ground(pos, player)
       repeat
          local node = minetest.get_node({x = pos.x, y = pos.y - i, z = pos.z})
          i = i-1
-         if i == -40 then
+         if i == -30 then
             random_spawn(player)
          end
          if node.name ~= 'air' and node.name ~= 'ignore' then
-            local protection = minetest.is_protected({x = pos.x, y = pos.y - i + 2, z = pos.z}, player)
+            local protection = minetest.is_protected({x = pos.x, y = pos.y - i + 1, z = pos.z}, player)
             if protection then
                random_spawn(player)
+
             else
                player:setpos({x = pos.x, y = pos.y - i + 2, z = pos.z})
                minetest.set_node({x = pos.x, y = pos.y + i +1, z = pos.z}, {name = 'default:torch', param2 = 1})
                finished = true
             end
          end
-      until finished == true or i < -40
+      until finished == true or i < -30
    elseif node.name ~= 'air' or node.name ~= 'ignore' then --Theoretically below ground
       local i = 1
       repeat
          local node = minetest.get_node({x = pos.x, y = pos.y + i, z = pos.z})
          i = i + 1
-         if i == 40 then
+         if i == 30 then
             random_spawn(player)
          end
          if node.name == 'air' then
@@ -52,10 +53,10 @@ function find_ground(pos, player)
             else
                player:setpos({x = pos.x, y = pos.y + i, z = pos.z})
                minetest.set_node({x = pos.x, y = pos.y + i -1, z = pos.z}, {name = 'default:torch', param2 = 1})
-               i = 45
+               i = 35
             end
          end
-      until node.name == 'air' or i >= 40
+      until node.name == 'air' or i >= 30
    end
 end
 
