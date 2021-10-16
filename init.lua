@@ -79,3 +79,18 @@ minetest.register_on_newplayer(function(player)
     spawnrand(player)
 end)
 
+-- newspam in payer dead, but doe snot remain with same position.. take care of bed but not of home yet
+minetest.register_on_respawnplayer(function(player)
+    local name = player:get_player_name()
+    if beds.spawn then
+        local pos = beds.spawn[name]
+        if pos then
+            minetest.log("action", name.." already has bed, so no spawnrand, respawns at "..minetest.pos_to_string(pos))
+            player:setpos(pos)
+            return true
+        end
+    else
+        minetest.log("action", name.." does not has bed, again i will send you far away to you last position")
+        spawnrand(player)
+    end
+end)
