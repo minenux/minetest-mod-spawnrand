@@ -1,8 +1,22 @@
 spawnrand = {}
 
+-- autodetection of beds support (only oficial mod)
+local bed_respawn = minetest.settings:get_bool("enable_bed_respawn")
+if bed_respawn == nil then
+    bed_respawn = true
+end
+local bed_availav = minetest.get_modpath("beds")
+if bed_availav == nil then
+    bed_respawn = false
+end
+if beds == nil then
+    bed_respawn = false
+end
+
+-- spawnrand function invocation, it uses internat "find_ground" to fid valid position from initial one
 function spawnrand(player)
-   local elevation = 15
-   local radius = 500
+   local elevation = 20
+   local radius = 600
    local posx = math.random(-radius, radius)
    local posz = math.random(-radius, radius)
    local new_spawn = {x = -174 + posx, y = elevation, z = 178 + posz}
@@ -15,6 +29,7 @@ function spawnrand(player)
    end
 end
 
+-- find valid position from the player given
 function find_ground(pos, player)
    local node = minetest.get_node({x = pos.x, y = pos.y, z = pos.z})
    if node.name == 'air' or node.name == 'ignore' then --Theoretically above ground
@@ -37,7 +52,7 @@ function find_ground(pos, player)
                finished = true
             end
          end
-      until finished == true or i < -20
+      until finished == true or i < -30
    elseif node.name ~= 'air' or node.name ~= 'ignore' then --Theoretically below ground
       local i = 1
       repeat
@@ -67,7 +82,7 @@ minetest.register_node('spawnrand:node', {
    tiles = {'default_gold_lump.png'},
    groups = {oddly_breakable_by_hand = 1},
    paramtype = 'light',
-   light_source = 14,
+   light_source = 10,
    on_punch = function(pos, node, player)
       spawnrand(player)
    end
@@ -76,21 +91,54 @@ minetest.register_node('spawnrand:node', {
 
 -- newspam in new player join
 minetest.register_on_newplayer(function(player)
-    spawnrand(player)
+
+    if player ~= nil then
+        spawnrand(player)
+    end
+
+end)
+
+
+-- if joins again and are yet registered
+minetest.register_on_joinplayer(function(player)
+
+    local name
+
+    if player ~= nil then
+        name = player:get_player_name( )
+        if bed_respawn then
+            local pos = beds.spawn[name]
+            if pos then
+                player:setpos(pos)
+            else
+                spawnrand(player)
+            end
+        else
+            spawnrand(player)
+        end
+    end
+
 end)
 
 -- newspam in payer dead, but doe snot remain with same position.. take care of bed but not of home yet
 minetest.register_on_respawnplayer(function(player)
-    local name = player:get_player_name()
-    if beds.spawn then
-        local pos = beds.spawn[name]
-        if pos then
-            minetest.log("action", name.." already has bed, so no spawnrand, respawns at "..minetest.pos_to_string(pos))
-            player:setpos(pos)
-            return true
+
+    local name
+
+    if player ~= nil then
+        name = player:get_player_name( )
+        if bed_respawn then
+            local pos = beds.spawn[name]
+            if pos then
+                player:setpos(pos)
+            else
+                spawnrand(player)
+            end
+        else
+            spawnrand(player)
         end
-    else
-        minetest.log("action", name.." does not has bed, again i will send you far away to you last position")
-        spawnrand(player)
     end
+
+    return true
+
 end)
