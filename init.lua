@@ -48,8 +48,8 @@ function find_ground(pos, player)
 
             else
                player:setpos({x = pos.x, y = pos.y - i + 2, z = pos.z})
-               minetest.set_node({x = pos.x, y = pos.y + i +1, z = pos.z}, {name = 'default:torch', param2 = 1})
                finished = true
+                return true
             end
          end
       until finished == true or i < -30
@@ -67,11 +67,11 @@ function find_ground(pos, player)
                spawnrand(player)
             else
                player:setpos({x = pos.x, y = pos.y + i, z = pos.z})
-               minetest.set_node({x = pos.x, y = pos.y + i -1, z = pos.z}, {name = 'default:torch', param2 = 1})
                i = 25
+                return true
             end
          end
-      until node.name == 'air' or i >= 30
+      until node.name == 'air' or i >= 20
    end
 end
 
@@ -98,28 +98,6 @@ minetest.register_on_newplayer(function(player)
 
 end)
 
-
--- if joins again and are yet registered
-minetest.register_on_joinplayer(function(player)
-
-    local name
-
-    if player ~= nil then
-        name = player:get_player_name( )
-        if bed_respawn then
-            local pos = beds.spawn[name]
-            if pos then
-                player:setpos(pos)
-            else
-                spawnrand(player)
-            end
-        else
-            spawnrand(player)
-        end
-    end
-
-end)
-
 -- newspam in payer dead, but doe snot remain with same position.. take care of bed but not of home yet
 minetest.register_on_respawnplayer(function(player)
 
@@ -131,14 +109,15 @@ minetest.register_on_respawnplayer(function(player)
             local pos = beds.spawn[name]
             if pos then
                 player:setpos(pos)
+                return true
             else
                 spawnrand(player)
+                return true
             end
         else
             spawnrand(player)
+            return true
         end
     end
-
-    return true
 
 end)
