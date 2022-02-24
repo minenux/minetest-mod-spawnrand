@@ -1,0 +1,1 @@
+Simple random spawn on each respawn of player
