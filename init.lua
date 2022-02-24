@@ -49,10 +49,14 @@ function find_ground(pos, player)
             else
                player:setpos({x = pos.x, y = pos.y - i + 2, z = pos.z})
                finished = true
+                  name = player:get_player_name()
+                  pos = player:getpos()
+                  minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  minetest.log("action", "[spawnrand] position for "..name.. ", "..pos.x..","..pos.y..","..pos.z)
                 return true
             end
          end
-      until finished == true or i < -30
+      until finished == true or i <= -20
    elseif node.name ~= 'air' or node.name ~= 'ignore' then --Theoretically below ground
       local i = 1
       repeat
@@ -68,6 +72,10 @@ function find_ground(pos, player)
             else
                player:setpos({x = pos.x, y = pos.y + i, z = pos.z})
                i = 25
+                  name = player:get_player_name()
+                  pos = player:getpos()
+                  minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  minetest.log("action", "[spawnrand] position for "..name.. ", "..pos.x..","..pos.y..","..pos.z)
                 return true
             end
          end
@@ -92,7 +100,10 @@ minetest.register_node('spawnrand:node', {
 -- newspam in new player join
 minetest.register_on_newplayer(function(player)
 
+    local pos
     if player ~= nil then
+        pos = player:getpos()
+        minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
         spawnrand(player)
     end
 
@@ -101,23 +112,24 @@ end)
 -- newspam in payer dead, but doe snot remain with same position.. take care of bed but not of home yet
 minetest.register_on_respawnplayer(function(player)
 
-    local name
+    local name, pos
 
     if player ~= nil then
-        name = player:get_player_name( )
+        name = player:get_player_name()
+        pos = player:getpos()
+        minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
         if bed_respawn then
-            local pos = beds.spawn[name]
+            pos = beds.spawn[name]
             if pos then
                 player:setpos(pos)
-                return true
             else
+                minetest.log("error", "[spawnrand] fails to determine bed position for "..name.. ", new spawn will be used")
                 spawnrand(player)
-                return true
             end
         else
             spawnrand(player)
-            return true
         end
+        return true
     end
 
 end)
