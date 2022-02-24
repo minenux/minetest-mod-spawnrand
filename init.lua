@@ -13,6 +13,8 @@ if beds == nil then
     bed_respawn = false
 end
 
+local notice_pos = minetest.settings:get_bool("spawnrand.notification_position") or true
+
 -- spawnrand function invocation, it uses internat "find_ground" to fid valid position from initial one
 function spawnrand(player)
    local elevation = 20
@@ -51,7 +53,9 @@ function find_ground(pos, player)
                finished = true
                   name = player:get_player_name()
                   pos = player:getpos()
-                  minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  if notice_pos then 
+                      minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  end
                   minetest.log("action", "[spawnrand] position for "..name.. ", "..pos.x..","..pos.y..","..pos.z)
                 return true
             end
@@ -74,7 +78,9 @@ function find_ground(pos, player)
                i = 25
                   name = player:get_player_name()
                   pos = player:getpos()
-                  minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  if notice_pos then 
+                      minetest.chat_send_player(name, "spawnrand: "..pos.x..","..pos.y..","..pos.z )
+                  end
                   minetest.log("action", "[spawnrand] position for "..name.. ", "..pos.x..","..pos.y..","..pos.z)
                 return true
             end
@@ -103,7 +109,9 @@ minetest.register_on_newplayer(function(player)
     local pos
     if player ~= nil then
         pos = player:getpos()
-        minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
+        if notice_pos then 
+            minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
+        end
         spawnrand(player)
     end
 
@@ -117,7 +125,9 @@ minetest.register_on_respawnplayer(function(player)
     if player ~= nil then
         name = player:get_player_name()
         pos = player:getpos()
-        minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
+        if notice_pos then 
+            minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
+        end
         if bed_respawn then
             pos = beds.spawn[name]
             if pos then

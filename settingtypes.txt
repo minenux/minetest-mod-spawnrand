@@ -1,0 +1,2 @@
+#    will send a chat notificatin private message to the player about new spawn position
+spawnrand.notification_position (Send a private notification about new pos to player) bool true
