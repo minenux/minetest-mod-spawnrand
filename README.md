@@ -1,9 +1,9 @@
 minetest mod spawnrand
 ======================
 
-Simple random spawn on each respawn of player
+SPAWN random on each respawn of player
 
-Information
+## Information
 -----------
 
 This mod is named `spawnrand` and changes spawn point on each respawn
@@ -12,7 +12,7 @@ no matter what rules.
 
 ![screenshot.png](screenshot.png)
 
-Techical info
+## Technical info
 -------------
 
 This mod has an improved way to do not hand server if no valild spawn point 
@@ -51,3 +51,4 @@ The above copyright notice and this permission notice
 shall be included in all copies or substantial portions of the Software.
 
 [license.txt](license.txt)
+
