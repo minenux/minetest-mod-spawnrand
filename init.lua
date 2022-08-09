@@ -13,12 +13,38 @@ if beds == nil then
     bed_respawn = false
 end
 
+-- enalbe random only if radio are enought in game
+local enable_rand = true
+
+-- send notification to players only if enabled
 local notice_pos = minetest.settings:get_bool("spawnrand.notification_position") or true
+
+-- detect limits of maps to do not spawn close to borders
+local mapgen_limit = tonumber(minetest.settings:get("mapgen_limit")) or 30000
+
+-- set the radio of the spawn area to search
+local radius_area = tonumber(minetest.settings:get("spawnrand.radius_area")) or math.abs(mapgen_limit)
+
+-- now autodetection of the area and limits
+radius_area = math.abs(radius_area)
+
+if ( radius_area >= mapgen_limit ) then
+    radius_area = mapgen_limit -- too big or invalid
+end
+if ( radius_area < 100 ) then
+    radius_area = 300  -- too small will hit performance in big servers
+end
+if ( radius_area >= 20000 ) then
+    radius_area = radius_area - mapgen_limit * 0.2 -- avoid borders
+end
+if ( radius_area < 3 ) then
+    enable_rand = false -- this area is nonsense disable then
+end
 
 -- spawnrand function invocation, it uses internat "find_ground" to fid valid position from initial one
 function spawnrand(player)
    local elevation = 20
-   local radius = 600
+   local radius = ratio_area
    local posx = math.random(-radius, radius)
    local posz = math.random(-radius, radius)
    local new_spawn = {x = -174 + posx, y = elevation, z = 178 + posz}
@@ -98,16 +124,19 @@ minetest.register_node('spawnrand:node', {
    paramtype = 'light',
    light_source = 10,
    on_punch = function(pos, node, player)
+      if not enable_rand then
+            minetest.chat_send_player(player:get_player_name( ), "WARNING radio is 1, current position : ".. pos.x ..","..pos.y..","..pos.z )
+      end
       spawnrand(player)
    end
 })
 
 
--- newspam in new player join
+-- newspam in new player join, if radio 1 disable rand due performance, new players do not have bed rest yet
 minetest.register_on_newplayer(function(player)
 
     local pos
-    if player ~= nil then
+    if player ~= nil and enable_rand then
         pos = player:getpos()
         if notice_pos then 
             minetest.chat_send_player(player:get_player_name( ), "...awaiting new spawn from : ".. pos.x ..","..pos.y..","..pos.z )
@@ -122,7 +151,7 @@ minetest.register_on_respawnplayer(function(player)
 
     local name, pos
 
-    if player ~= nil then
+    if player ~= nil and enable_rand then
         name = player:get_player_name()
         pos = player:getpos()
         if notice_pos then 

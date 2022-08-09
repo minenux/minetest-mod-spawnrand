@@ -1,2 +1,5 @@
 #    will send a chat notificatin private message to the player about new spawn position
-spawnrand.notification_position (Send a private notification about new pos to player) bool true
+spawnrand.notification_position (Send a private notification about new pos to player, can be set in game) bool true
+
+#    radious spawn area to randomlly put the positon, by default only 600 nodes from center
+spawnrand.radius_area (Ratio area from center to find a spawn position, cannot set in game, must be set before run) int 20000

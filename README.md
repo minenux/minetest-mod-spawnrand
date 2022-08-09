@@ -15,7 +15,7 @@ no matter what rules.
 ## Technical info
 -------------
 
-This mod has an improved way to do not hand server if no valild spawn point 
+This mod has an improved way to do not hang server if no valild spawn point 
 is found in some minutes.. cos all spawn managers in minetest causes problems 
 when players joins.
 
@@ -36,6 +36,14 @@ or taidkez's rspawn original work.
 It will send a chat notificatin private message to the player about new spawn position, 
 is configurable with `spawnrand.notification_position` boolean value with defaults as `true`.
 
+The spawn area will have a radious almost to the limit (but not the), from center of world, 
+is configurable with `spawnrand.radius_area` integer value with defaults as `20000`.
+
+#### performance
+
+If your server has huge users, you must increase the spawn area, but not so much, people 
+will just be repositioned at new position event define a new spawn if fails, so performance 
+will be not an issue if no a valid spawn point will found.
 
 License
 ------
